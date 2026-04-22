@@ -2,3 +2,89 @@
 #include <GL/glut.h>
 #include <GL/glu.h>
 #include <cmath>
+int signalState = 0;
+float barrierY = -0.25;
+float carX = -1.2;
+float pedY = -1.0;
+
+void drawLineDDA(float x1,float y1,float x2,float y2) {
+
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+
+    float steps = (fabs(dx) > fabs(dy)) ? fabs(dx) : fabs(dy);
+
+    float xInc = dx / steps;
+    float yInc = dy / steps;
+
+    float x = x1;
+    float y = y1;
+
+    glBegin(GL_POINTS);
+    for(int i=0;i<=steps;i++) {
+        glVertex2f(x,y);
+        x += xInc;
+        y += yInc;
+    }
+    glEnd();
+}
+
+// Bresenham
+void drawLineBresenham(float x1,float y1,float x2,float y2) {
+
+    int X1 = (int)((x1 + 1) * 500);
+    int Y1 = (int)((y1 + 1) * 500);
+    int X2 = (int)((x2 + 1) * 500);
+    int Y2 = (int)((y2 + 1) * 500);
+
+    int dx = abs(X2 - X1);
+    int dy = abs(Y2 - Y1);
+
+    int sx = (X1 < X2) ? 1 : -1;
+    int sy = (Y1 < Y2) ? 1 : -1;
+
+    int err = dx - dy;
+
+    glBegin(GL_POINTS);
+    while(true) {
+
+        float xf = (X1 / 500.0f) - 1.0f;
+        float yf = (Y1 / 500.0f) - 1.0f;
+
+        glVertex2f(xf,yf);
+
+        if(X1 == X2 && Y1 == Y2) break;
+
+        int e2 = 2 * err;
+
+        if(e2 > -dy) { err -= dy; X1 += sx; }
+        if(e2 < dx)  { err += dx; Y1 += sy; }
+    }
+    glEnd();
+}
+
+void update(int v) {
+
+    if(signalState == 0 && barrierY < 0.05)
+        barrierY += 0.01;
+
+    if(signalState == 1 && barrierY > -0.25)
+        barrierY -= 0.01;
+
+    if(signalState == 1) {
+        carX += 0.01;
+    } else {
+        if(carX < -0.17)
+            carX += 0.005;
+    }
+
+    if(carX > 1.2) carX = -1.2;
+
+    if(signalState == 0) {
+        pedY += 0.01;
+        if(pedY > 0.6) pedY = -1.0;
+    }
+
+    glutPostRedisplay();
+    glutTimerFunc(16, update, 0);
+}
