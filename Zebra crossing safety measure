@@ -88,3 +88,125 @@ void update(int v) {
     glutPostRedisplay();
     glutTimerFunc(16, update, 0);
 }
+void drawRoad() {
+
+    glColor3f(0.2,0.2,0.2);
+    glRectf(-1,-0.2,1,0.2);
+
+    glColor3f(1,1,1);
+    for(float i=-0.05;i<=0.05;i+=0.02){
+        glRectf(i,-0.2,i+0.01,0.2);
+    }
+}
+
+void drawTrafficLight() {
+
+    glColor3f(0.3,0.3,0.3);
+    glRectf(0.8,0.2,0.85,0.7);
+
+    if(signalState==0) glColor3f(1,0,0);
+    else glColor3f(0.3,0,0);
+    glRectf(0.78,0.65,0.87,0.75);
+
+    if(signalState==1) glColor3f(0,1,0);
+    else glColor3f(0,0.3,0);
+    glRectf(0.78,0.5,0.87,0.6);
+}
+
+void drawLamp() {
+
+   
+    glColor3f(0.2,0.2,0.2);
+
+    for(float i = -0.75; i <= -0.72; i += 0.002) {
+        drawLineBresenham(i, -0.2, i, 0.55);
+    }
+
+
+ 
+    glColor3f(1,1,1);
+    drawLineDDA(-0.73, 0.50, -0.60, 0.50);
+
+    
+    drawLineBresenham(-0.73, 0.48, -0.60, 0.48);
+
+
+    drawLineBresenham(-0.60, 0.50, -0.60, 0.48);
+
+    drawLineBresenham(-0.60,0.48,-0.58,0.48);
+    drawLineBresenham(-0.58,0.48,-0.58,0.44);
+    drawLineBresenham(-0.58,0.44,-0.60,0.44);
+    drawLineBresenham(-0.60,0.44,-0.60,0.48);
+
+    // Bulb
+    glColor3f(1,1,0.3);
+    glBegin(GL_POLYGON);
+    for(int i=0;i<20;i++){
+        float a = i * 2 * M_PI / 20;
+        glVertex2f(-0.59 + 0.03*cos(a), 0.44 + 0.03*sin(a));
+    }
+    glEnd();
+
+    // Glow
+    glColor4f(1,1,0,0.25);
+    glBegin(GL_POLYGON);
+    for(int i=0;i<20;i++){
+        float a = i * 2 * M_PI / 20;
+        glVertex2f(-0.59 + 0.08*cos(a), 0.44 + 0.08*sin(a));
+    }
+    glEnd();
+}
+
+
+void drawBarrierGate() {
+
+    if(signalState == 1) return;
+
+    glColor3f(1,0.8,0);
+
+    glRectf(-0.05, barrierY, 0.05, barrierY + 0.05);
+}
+
+
+void drawCar() {
+
+    glPushMatrix();
+    glTranslatef(carX,-0.05,0);
+
+    glColor3f(0,0,1);
+    glRectf(-0.12,-0.05,0.12,0.05);
+
+    glColor3f(0,0,0);
+    glRectf(-0.1,-0.08,-0.05,-0.05);
+    glRectf(0.05,-0.08,0.1,-0.05);
+
+    glPopMatrix();
+}
+
+
+void drawPedestrian() {
+
+    if(signalState != 0) return;
+
+    glPushMatrix();
+    glTranslatef(0,pedY,0);
+
+    glColor3f(1,0.8,0.6);
+    glBegin(GL_POLYGON);
+    for(int i=0;i<20;i++){
+        float a = i*2*M_PI/20;
+        glVertex2f(0.02*cos(a),0.02*sin(a)+0.1);
+    }
+    glEnd();
+
+    glColor3f(0,0,0);
+    glBegin(GL_LINES);
+        glVertex2f(0,0.08); glVertex2f(0,0);
+        glVertex2f(0,0.06); glVertex2f(-0.03,0.03);
+        glVertex2f(0,0.06); glVertex2f(0.03,0.03);
+        glVertex2f(0,0); glVertex2f(-0.02,-0.05);
+        glVertex2f(0,0); glVertex2f(0.02,-0.05);
+    glEnd();
+
+    glPopMatrix();
+}
