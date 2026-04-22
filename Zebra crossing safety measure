@@ -1,0 +1,4 @@
+#define _USE_MATH_DEFINES
+#include <GL/glut.h>
+#include <GL/glu.h>
+#include <cmath>
