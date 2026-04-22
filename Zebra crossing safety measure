@@ -29,7 +29,6 @@ void drawLineDDA(float x1,float y1,float x2,float y2) {
     glEnd();
 }
 
-// Bresenham
 void drawLineBresenham(float x1,float y1,float x2,float y2) {
 
     int X1 = (int)((x1 + 1) * 500);
